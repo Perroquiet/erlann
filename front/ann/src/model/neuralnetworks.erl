@@ -1,0 +1,1 @@
+-module(neuralnetworks, [Id, NetworkName, NetworkPid, NumInputs, NumHidden, NumOutputs]).-compile(export_all).

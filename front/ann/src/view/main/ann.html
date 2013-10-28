@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>{% block title %}ANN MGNUM{% endblock %}</title>
+	</head>
+
+	<body>
+		{% block body %}
+		<ul>
+		{% if networks %}
+		 {% for network in networks %}
+		 <li>{{ network.network_text }}
+		 {% endfor %}
+		{% else %}
+		 <li>No Networks!
+		{% endif %}
+		</ul>
+		{% endblock %}
+	</body>
+
+	<p><a href="{% url action="create_network" %}">Create new Network</a></p>
+
+</html>

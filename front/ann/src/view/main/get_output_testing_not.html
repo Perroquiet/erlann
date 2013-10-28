@@ -1,0 +1,9 @@
+<ol>
+	{% if outputs %}
+		{% for output, actual, error in outputs %}
+		
+		<li> <br/>Output: {{ output }} <br/> Actual: {{ actual }} <br/> Error: {{ error }}
+		
+		{% endfor %}
+	{% endif %}
+</ol>

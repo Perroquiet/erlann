@@ -1,0 +1,9 @@
+<ul>
+		{% if outputs %}
+			{% for output in outputs %}
+			<li>{{ output }}
+			{% endfor %}
+		{% else %}
+			<li>No Neural Nets created!
+		{% endif %}
+</ul>

@@ -1,0 +1,112 @@
+<html>
+	<head>
+		<title>ANN Front</title>
+	</head>
+	
+	<body>
+		{{ blah }}
+		<div>
+		List of NN created: 
+		{% block body %}
+		<ul>
+		{% if networks %}
+			{% for network in networks %}
+			<li>{{ network.network_name }}
+			{% endfor %}
+		{% else %}
+			<li>No Neural Nets created!
+		{% endif %}
+		</ul>
+		{% endblock %}
+		
+		</div>
+		<div>
+			<form method="get" action="{% url action="create_network" %}">
+			Network Name: <input type="text" name="networkName"><br/>
+			# of Inputs: <input type="text" name="inputs"><br/>
+			# of Hidden: <input type="text" name="hidden"><br/>
+			# of Output: <input type="text" name="output"><br/>
+			<input type="submit" value="Create Network">
+			</form>
+		</div>
+		<table border="1" cellpadding=10px>
+			<tr>
+			<td>
+			<div>
+				<h2>Training</h2>
+				<form method="post" action="{% url action="pass_csv_training" %}" enctype="multipart/form-data">
+				Select Network:
+				<select name="network_pid3">
+				{% for network in networks %}
+				<option value="{{ network.id }}">{{ network.network_name }}
+				{% endfor %}
+				</select>
+				<br/><br/>
+				
+					<input type="file" id="uploaded_file" name="uploaded_file" multiple />
+					&nbsp;<br>
+					<output id="list"></output>
+				<input type="submit">
+				</form>
+			</div>
+			</td>
+			<td>
+			<div>
+				<h2>Testing</h2>
+				<form method="post" action="{% url action="pass_csv_testing" %}" enctype="multipart/form-data">
+				Select Network:
+				<select name="network_pid5">
+				{% for network in networks %}
+				<option value="{{ network.id }}">{{ network.network_name }}
+				{% endfor %}
+				</select>
+				<br/><br/>
+				<input type="submit", value="Test Network">
+				</form>
+			</div>
+			<div>
+				<form method="get" action="{% url action="get_output_testing" %}">
+				Select Network:
+				<select name="network_pid6">
+				{% for network in networks %}
+				<option value="{{ network.id }}">{{ network.network_name }}
+				{% endfor %}
+				</select>
+				<input type="submit" value="Get Error">
+				</form>
+			</div>
+			</td>
+			<td>
+			<div>
+				<h2>Forecast</h2>
+				<form method="post" action="{% url action="pass_csv_forecast" %}" enctype="multipart/form-data">
+				Select Network:
+				<select name="network_pid7">
+				{% for network in networks %}
+				<option value="{{ network.id }}">{{ network.network_name }}
+				{% endfor %}
+				</select><br/><br/>
+					<input type="file" id="uploaded_file" name="uploaded_file" multiple />
+					&nbsp;<br>
+					<output id="list"></output>
+				<input type="submit">
+				</form>
+			</div>
+			<div>
+				<form method="get" action="{% url action="get_output_forecast" %}">
+				Select Network:
+				<select name="network_pid8">
+				{% for network in networks %}
+				<option value="{{ network.id }}">{{ network.network_name }}
+				{% endfor %}
+				</select>
+				<input type="submit" value="Get Output">
+				</form>
+			</div>
+			</td>
+			</tr>
+		</table>
+		
+	</body>
+
+</html>

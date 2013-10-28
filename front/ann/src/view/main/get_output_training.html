@@ -1,0 +1,9 @@
+<ol>
+	{% if outputs %}
+		{% for output, actual in outputs %}
+		
+		<li> <br/>Output: {{ output }} <br/> Actual: {{ actual }}
+		
+		{% endfor %}
+	{% endif %}
+</ol>

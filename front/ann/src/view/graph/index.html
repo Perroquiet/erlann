@@ -1,0 +1,67 @@
+<html>
+<head>
+	<title>Forecast Graph</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<link href="/static/css/style.css" rel="stylesheet" type="text/css" media="screen" />	
+	<link type='text/css' href='/static/css/promptwindow.css' rel='stylesheet' media='screen' />
+	
+	<link href='/static/css/blitzer/jqueryui.css' rel='stylesheet' type='text/css' />
+</head>
+<body>
+		<header>
+		<h1 class="title">Forecast Graph</h1>
+		</header>
+<div>
+		<br>
+		<div> 
+		   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		   <button id="plotGraph">Plot Graph</button>
+			<button id="clearGraph">Clear Graph</button>
+		</div>
+
+		<div class="example">
+			<h2>Upload File</h2>
+			<a href="#" onclick="openDialogUpload()">Upload your file here</a>
+			<hr />
+				<output id="list"></output>
+			<hr />
+		</div>
+		
+		<div class="example">
+			<h2>Result Graph</h2>
+			<div id='options-container' style='float:right'>
+				<input type='text' id='start-date' placeholder='Start Date' />
+				<input type='text' id='end-date' placeholder='End Date' />
+				<button id='update-options' title='Update Table'>Update Table</button>
+			</div>
+			<div id="graphic_container" style="margin: 0 auto"></div>
+		</div>
+
+		<!-- pop up window layout -->
+		<div id="basic-modal-content">
+			<h1>Load data</h1><br>
+				<label for="file">Select data file:</label>
+				<input type="file" id="files" name="files[]" multiple />
+		</div>
+		
+		<button id='chuchu' />
+
+		<!-- pop up window exit png -->
+		<div style='display:none'>
+			<img src='img/basic/x.png' alt='' />
+		</div>
+</div>
+
+<!-- tapok mo dre mg js -->
+<script type='text/javascript' src="/static/js/jquery.js"></script>
+<script type='text/javascript' src="/static/js/jqueryui.js"></script>
+<script type='text/javascript' src='/static/js/popupwindow.js'></script>
+<script type='text/javascript' src="/static/js/csvcontroller.js"></script>
+<script src="/static/js/highchartsapi/highcharts.js"></script>
+<script src="/static/js/highchartsapi/modules/exporting.js"></script>
+<script src="/static/js/selectfileupload.js"></script>
+<script src="/static/js/graph.js"></script>
+<script type='text/javascript' src="/static/js/onload.js"></script>
+
+</body>
+</html>
