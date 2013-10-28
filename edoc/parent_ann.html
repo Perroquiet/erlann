@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Module parent_ann</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module parent_ann</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>The Parent process function.
+<p>Copyright © 2013 MAGNUM</p>
+
+<p><b>Version:</b> 0.9.0 (lib)</p>
+<p><b>Authors:</b> MAGNUM TEAM.</p>
+
+<h2><a name="description">Description</a></h2>The Parent process function
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#loop-7">loop/7</a></td><td>Types:
+  <pre>  InputLayer = List of Input nodes
+  HiddenLayer = List of Hidden nodes
+  OutputLayer = List of Output nodes
+  Factors = List of tuples, containing the Denormalization Value, Expected Value, and the Log Expected Value
+  TrainingPoints = List of Training Points
+  TestingError = List of Testing Errors
+  MSPError = List of MSPE values</pre>
+  Receive:
+  <pre>  {iLayer_Pid, Pid, Index} = returns a process id of the selected node in the Input layer
+  {hLayer_Pid, Pid, Index, InnerIndex} = returns a process id of the selected node in the Hidden layer
+  {oLayer_Pid, Pid, Index} = returns a process id of the selected node in the Output layer
+  {get_input_layer, Pid} = returns the list of Input nodes
+  {get_hidden_layer, Pid} = returns the list of Hidden nodes
+  {get_output_layer, Pid} = returns the list of Output nodes
+  {set_norm, DenormFactor, Exp, LogExp} = sets the Denormalization Factor, Expected Value, and Log Expected Value of the network
+  {get_norm, From} = returns  the  Factors tuple
+  {get_expected, From} = returns the expected values from Factors
+  {get_log_expected, From} = returns the log expected values from Factors
+  {return_status, NodePid, From} = returns the status of the perceptron
+  {return_output, NodePid, From} = returns the output of the preceptron
+  {pass, NodePid, InputValue, Expected_Val} = passes values to a perceptron
+  {set_training_points, Tp} = sets the Training Points of the Input Data
+  {get_training_point, From} = returns the list of Training Points
+  {count_training_set, From} = returns the number of Training Points
+  {set_testing_error, List} = sets the testing error during network testing
+  {reset_testing} = resets the testing error to an empty list
+  {get_testing_error, From} = returns a list of Testing Errors
+  {set_mspe_error, ErrorValue} = sets the MSPE error
+  {get_mspe_error, From} = returns the MSPE error
+  {remove_mspe_error} = removes the head of the list of MSPE errors</pre>
+  The parent process of the neural network, that stores the state and configuration of the neural network.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="loop-7">loop/7</a></h3>
+<div class="spec">
+<p><tt>loop(InputLayer::list(), HiddenLayer::list(), OutputLayer::list(), Factors::list(), TrainingPoints::list(), TestingError::list(), MSPError::list()) -&gt; none()</tt><br></p>
+</div><p>Types:
+  <pre>  InputLayer = List of Input nodes
+  HiddenLayer = List of Hidden nodes
+  OutputLayer = List of Output nodes
+  Factors = List of tuples, containing the Denormalization Value, Expected Value, and the Log Expected Value
+  TrainingPoints = List of Training Points
+  TestingError = List of Testing Errors
+  MSPError = List of MSPE values</pre>
+  Receive:
+  <pre>  {iLayer_Pid, Pid, Index} = returns a process id of the selected node in the Input layer
+  {hLayer_Pid, Pid, Index, InnerIndex} = returns a process id of the selected node in the Hidden layer
+  {oLayer_Pid, Pid, Index} = returns a process id of the selected node in the Output layer
+  {get_input_layer, Pid} = returns the list of Input nodes
+  {get_hidden_layer, Pid} = returns the list of Hidden nodes
+  {get_output_layer, Pid} = returns the list of Output nodes
+  {set_norm, DenormFactor, Exp, LogExp} = sets the Denormalization Factor, Expected Value, and Log Expected Value of the network
+  {get_norm, From} = returns  the  Factors tuple
+  {get_expected, From} = returns the expected values from Factors
+  {get_log_expected, From} = returns the log expected values from Factors
+  {return_status, NodePid, From} = returns the status of the perceptron
+  {return_output, NodePid, From} = returns the output of the preceptron
+  {pass, NodePid, InputValue, Expected_Val} = passes values to a perceptron
+  {set_training_points, Tp} = sets the Training Points of the Input Data
+  {get_training_point, From} = returns the list of Training Points
+  {count_training_set, From} = returns the number of Training Points
+  {set_testing_error, List} = sets the testing error during network testing
+  {reset_testing} = resets the testing error to an empty list
+  {get_testing_error, From} = returns a list of Testing Errors
+  {set_mspe_error, ErrorValue} = sets the MSPE error
+  {get_mspe_error, From} = returns the MSPE error
+  {remove_mspe_error} = removes the head of the list of MSPE errors</pre>
+  The parent process of the neural network, that stores the state and configuration of the neural network.</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Oct 29 2013, 00:47:51.</i></p>
+</body>
+</html>

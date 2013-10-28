@@ -1,6 +1,10 @@
-% 
-% ERLANN Library - Production Version (v.0.9.0)
-%
+%%--------------------------------------------------------- 
+%% @author MAGNUM TEAM
+%% @copyright 2013 MAGNUM
+%% @version 0.9.0 (lib)
+%% @doc The main library for the ANN creation and execution
+%% @end
+%%---------------------------------------------------------
 -module(erlann).
 -export([
 			create_network/3,
@@ -24,12 +28,26 @@
 		]).
 -define(CSVCOLUMNS, 4).
 
-% MAJOR EXPORTED FUNCTIONS FOR THE NEURAL NETWORK CREATION AND EXECUTION
+%% -------------------------
+%% MAJOR EXPORTED FUNCTIONS
+%% -------------------------
 
-% Create network w/ number of inputs and hidden nodes.
-% Returns a Network Pid - Parent Process Pid.
+%% @spec create_network(NumInputNodes::integer(), HiddenLayersList::List, NumOutputNodes::integer) -> pid()
+%% @doc Types:
+%% ```
+%% NumInputNodes = integer(), Number of Input nodes
+%% HiddenLayersList = List, Number of Hidden layers and nodes per layer
+%% NumOutputNodes = integer(), Number of Output nodes
+%% '''
+%% Create network w/ number of inputs, hidden and output nodes.
+%% Returns a Network Pid - Parent Process Pid.
+%% <br/><br/>Example:
+%% ```>N = erlann:create_network(4,[4],1).'''
+%% Creates a network with 4 input nodes, 1 hidden layer with 4 hidden nodes, and 1 output node.
+%% @end
+
 create_network(NumInputNodes,HiddenLayersList,NumOutputNodes) ->
-	
+
 	X = spawn_nodes(NumInputNodes,[]),
 	Y = spawn_hidden(lists:map(fun(Nodes) -> Nodes+1 end, HiddenLayersList),[]),
 	Z = spawn_nodes(NumOutputNodes,[]),
@@ -40,10 +58,18 @@ create_network(NumInputNodes,HiddenLayersList,NumOutputNodes) ->
 	
 	spawn(parent_ann,loop,[X,Y,Z,[],[],[],[]]).
 
-% Returns the Pid of the desired Node
-% NetworkPid = Parent process of the network
-% Layer = input | hidden | output
-% Position = integer() | List
+%% @spec get_pid(NetworkPid::pid(), Layer::atom(), Position::integer()) -> pid()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% Layer = input | hidden | output
+%% Position = integer() | List
+%% '''
+%% Returns the Pid of the desired Node.
+%% <br/><br/>Example:
+%% ```>erlann:get_pid(N, hidden, [1,2]).'''
+%% Returns process id of the 1st hidden layer and 2nd index.
+%% @end
 
 get_pid(NetworkPid,Layer,Position) ->
 	case Layer of
@@ -59,7 +85,23 @@ get_pid(NetworkPid,Layer,Position) ->
 	end.
 		
 
-% Displays the status of the perceptron	
+%% @spec get_status(NetworkPid::pid(), Layer::atom(), Index::integer()) -> tuple()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% Layer = input | hidden | output
+%% Index = integer() | List
+%% '''
+%% Returns the status of a perceptron.
+%% Tuple consists of:<br/>
+%% ```
+%% {NodePid, Weights, Inputs, Sensitivities, Stale_inputs, Outputs}
+%% '''
+%% Example:
+%% ```>erlann:get_status(N, hidden, [1,2]).'''
+%% Returns process id of the 1st hidden layer and 2nd index.
+%% @end
+
 get_status(NetworkPid, Layer, Index) ->
 	NetworkPid ! {return_status,get_pid(NetworkPid,Layer,Index),self()},
 	receive
@@ -67,7 +109,17 @@ get_status(NetworkPid, Layer, Index) ->
 			Status
 	end.
 
-% Passes Values with a List of Inputs, and List of Expected Values
+%% @spec pass_values(NetworkPid::pid(), Inputs::list(), Expected::list()) -> none()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% Inputs = list(), List of input data
+%% Expected = list(), List of Expected Values, can be list of null values (no backpropagation)
+%% '''
+%% Passes Values to  the network with a List of Inputs, and List of Expected Values. 
+%% <br/><br/>Example:
+%% ```>erlann:pass_values(N, [1,0.4,0.5,0.6], [0.5]).'''
+%% @end
 
 pass_values(NetworkPid, Inputs, Expected) ->
 	InputLayer = get_input_layer(NetworkPid),
@@ -88,17 +140,24 @@ pass_values(NetworkPid, [P|Q], [H|T], ExpectedVal) ->
 	pass_values(NetworkPid, Q, T, ExpectedVal).
 	
 
-% PASSES INPUT DATA FROM A .CSV FILE
-% File = CSV File
-% NetworkPid = Parent Process of the network
-% ErrorDiff = User defined Error Threshold for training
+%% @spec pass_training(File::string(), NetworkPid::pid(), ErrorDiff::float()) -> none()
+%% @doc Types:
+%% ```
+%% File = filename_all(), Name of the CSV File ".csv" extension included
+%% NetworkPid = Parent process of the network
+%% ErrorDiff = float(), User defined Error Threshold for stopping the training
+%% '''
+%% Passes input data to the network from a Comma Separated Values (CSV) file for training.
+%% The function does the following: data normalization, gathering of training points, passing of values to the network, testing and error evaluation.
+%% <br/><br/>Example:
+%% ```>erlann:pass_training("Training1Day.csv", N, 0.001).'''
+%% @end
 
 pass_training(File, NetworkPid, ErrorDiff) ->
 	mspe_buffer(ErrorDiff),
 	pass_training(File, NetworkPid).
-	
 pass_training(File, NetworkPid) ->
-	{ok, Data} = csvANN:parse(File),
+	{ok, Data} = csv_parser:parse(File),
 	
 	TrainingWindowDays = trunc(length(get_input_layer(NetworkPid))/4),
 	TrainingDays = length(get_output_layer(NetworkPid)),
@@ -109,33 +168,87 @@ pass_training(File, NetworkPid) ->
 	do_training(File, NetworkPid, Terminator).
 	
 
-% Passed input data to a trained network and returns a forecasted data
+%% @spec pass_forecasting(File::string(), NetworkPid::pid()) -> none()
+%% @doc Types:
+%% ```
+%% File = filename_all(), Name of the CSV File ".csv" extension included
+%% NetworkPid = Parent process of the network
+%% '''
+%% Passes input data to the network from a Comma Separated Values (CSV) file for forecasting.
+%% The function does the following: data normalization, passing of values to the network, output return.
+%% <br/><br/>Example:
+%% ```>erlann:pass_forecasting("Forecast1Day.csv", N).'''
+%% @end
 	
 pass_forecasting(File, NetworkPid) ->
 		OutputLayer = get_output_layer(NetworkPid),
 		WindowDays = trunc(length(get_input_layer(NetworkPid))/4),
 		Window = WindowDays * ?CSVCOLUMNS,
-		{ok,Data} = csvANN:parse(File),
+		{ok,Data} = csv_parser:parse(File),
 		InputData = lists:nthtail(length(Data) - Window, Data),
 		Eval = lists:map(fun(_) -> null end, lists:seq(1,length(OutputLayer))),
 		pass_recurrence(InputData, NetworkPid, Eval).
 				
-% Returns ta list of PIDs in the Input Layer
+
+%% @spec get_input_layer(NetworkPid::pid()) -> List::list()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% List = List of process ids
+%% '''
+%% Returns ta list of PIDs in the Input Layer
+%% <br/><br/>Example:
+%% ```>erlann:get_input_layer(N).'''
+%% @end
+
 get_input_layer(NetworkPid) ->
 	NetworkPid ! {get_input_layer, self()},
 	receive {input_layer, InputLayer} -> InputLayer end.
 
-% Returns ta list of PIDs in the Hidden Layer(s)	
+
+%% @spec get_hidden_layer(NetworkPid::pid()) -> List::list()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% List = List of process ids
+%% '''
+%% Returns ta list of PIDs in the Hidden Layer(s)
+%% <br/><br/>Example:
+%% ```>erlann:get_hidden_layer(N).'''
+%% @end
+
 get_hidden_layer(NetworkPid) ->
 	NetworkPid ! {get_hidden_layer, self()},
 	receive {hidden_layer, HiddenLayer} -> HiddenLayer end.
 
-% Returns ta list of PIDs in the Output Layer	
+	
+%% @spec get_output_layer(NetworkPid::pid()) -> List::list()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% List = List of process ids
+%% '''
+%% Returns ta list of PIDs in the Output Layer
+%% <br/><br/>Example:
+%% ```>erlann:get_output_layer(N).'''
+%% @end
+
 get_output_layer(NetworkPid) ->
 	NetworkPid ! {get_output_layer, self()},
 	receive {output_layer, OutputLayer} -> OutputLayer end.
 	
-% Gets the Weight configuration of the Network and saved to a textfile	
+
+%% @spec get_config(NetworkPid::pid(), FileName::string()) -> ok
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% FileName = filename_all(), Name of file to save the configuration
+%% '''
+%% Gets the Weight configuration of the Network and saved to a textfile
+%% <br/><br/>Example:
+%% ```>erlann:get_config(N,"TrainingConf").'''
+%% @end
+
 get_config(NetworkPid,FileName) ->
 	X = get_input_layer(NetworkPid),
 	Y = get_hidden_layer(NetworkPid),
@@ -148,7 +261,17 @@ get_config(NetworkPid,FileName) ->
 	file:write_file(FileName,io_lib:fwrite("~p.\n", [Data])),
 	{A,B,C}.
 
-% Loads the configuration from a textfile and creates a new network
+
+%% @spec load_config(FileName::string()) -> pid()
+%% @doc Types:
+%% ```
+%% FileName = filename_all(), Name of file to load the configuration
+%% '''
+%% Loads the Weight configuration of the Network from a config file, and spawns a parent process.
+%% <br/><br/>Example:
+%% ```>N = erlann:load_config("TrainingConf").'''
+%% @end
+
 load_config(ConfigFile) ->
 	{ok,Content} = file:consult(ConfigFile),
 	% string:len(Content),
@@ -164,7 +287,18 @@ load_config(ConfigFile) ->
 	load_layer_config(Z,C),
 	spawn(parent_ann,loop,[X,Y,Z,[],[],[],[]]).
 
-% Loads the configuration to the network
+
+%% @spec load_weights(NetworkPid::pid(), FileName::string()) -> ok
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% FileName = filename_all(), Name of file to load the configuration
+%% '''
+%% Loads the Weight configuration to the network.
+%% <br/><br/>Example:
+%% ```>erlann:load_weights(N, "TrainingConf").'''
+%% @end
+
 load_weights(NetworkPid, ConfigFile) ->
 	{ok,Content} = file:consult(ConfigFile),
 	
@@ -176,7 +310,17 @@ load_weights(NetworkPid, ConfigFile) ->
 	load_layer_config(OutputLayer, C),
 	ok.
 
-% Resets the weights of the Network to values between [-1,1].
+
+%% @spec reset_weights(NetworkPid::pid()) -> ok
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% '''
+%% Resets the weights of the Network to values between [-1,1].
+%% <br/><br/>Example:
+%% ```>erlann:reset_weights(N).'''
+%% @end
+
 reset_weights(NetworkPid) ->
 	Y = get_hidden_layer(NetworkPid),
 	Z = get_output_layer(NetworkPid),
@@ -185,8 +329,21 @@ reset_weights(NetworkPid) ->
 	lists:foreach(fun(Pid2) -> Pid2 ! {reset} end, Z),
 	ok.
 	
-% Returns a TupleList with each element 
-% {Output_Process_ID, Output_from_the_network, Error}
+
+%% @spec get_output(NetworkPid::pid()) -> tuple()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% '''
+%% Returns the raw output of the network.
+%% Tuple consists of:
+%% ```
+%% {Output_Process_ID, Output_from_the_network, Error, ExpectedValue}
+%% '''
+%% <br/><br/>Example:
+%% ```>erlann:get_output(N).'''
+%% @end
+
 get_output(NetworkPid) ->
 	OutputLayer = get_output_layer(NetworkPid),
 	LogEval = get_log_expected_val(NetworkPid),
@@ -210,8 +367,20 @@ get_output(NetworkPid, [H|T], [P|Q], Outputs) ->
 	get_output(NetworkPid, T, Q, [{Pid,Output,Error,P}|Outputs]).
 
 	
-% Returns a tuplelist with each element is 
-% {Output_node_Process_ID, Log_reversed_Output, Accuracy}
+%% @spec get_log_rev(NetworkPid::pid()) -> tuple()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% '''
+%% Returns the output of the network.
+%% Tuple consists of:
+%% ```
+%% {Output_node_Process_ID, Log_reversed_Output, Accuracy}
+%% '''
+%% <br/><br/>Example:
+%% ```>erlann:get_log_rev(N).'''
+%% @end
+
 get_log_rev(NetworkPid) ->
 	
 	NetworkPid ! {get_norm, self()},
@@ -238,8 +407,15 @@ get_log_rev([H|T], [P|Q], [R|S], OutputList) ->
 	get_log_rev(T, Q, S, [{Pid,DenormalizedVal,Error,R}|OutputList]).	
 
 	
-% Computes the Error of the network using the Error Fucntion:
-% J(w) = 1/2 * SumOfAllOutputNodes((Training-Output)^2)
+%% @spec network_error(NetworkPid::pid()) -> float()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% '''
+%% Returns the Error of the network using the Error Fucntion
+%% <br/><br/>Example:
+%% ```>erlann:network_error(N).'''
+%% @end
 
 network_error(NetworkPid) ->
 	NetworkPid ! {get_testing_error, self()},
@@ -255,7 +431,15 @@ network_error(NetworkPid) ->
 		(lists:foldl(fun(X, Sum) -> X + Sum end, 0, Outputs))/2.
 	
 
-% Returns the Mean Squared Prediction Error (MSPE)
+%% @spec mspe(NetworkPid::pid()) -> float()
+%% @doc Types:
+%% ```
+%% NetworkPid = Parent process of the network
+%% '''
+%% Returns the MSPE of the network
+%% <br/><br/>Example:
+%% ```>erlann:mspe(N).'''
+%% @end
 
 mspe(NetworkPid) ->
 	
@@ -272,9 +456,11 @@ mspe(NetworkPid) ->
 		(lists:foldl(fun(X, Sum) -> X + Sum end, 0, Outputs))/length(Outputs).
 		
 
-%	
-% HELPER FUNCTIONS (NOT EXPORTED)
-%
+		
+
+%% -------------------------------	
+%% HELPER FUNCTIONS (NOT EXPORTED)
+%% -------------------------------
 
 % CONFIGURATION
 
@@ -414,13 +600,11 @@ remove(_, [], Acc) -> lists:reverse(Acc);
 remove(1, [_|T], Acc) -> lists:reverse(Acc, T); 
 remove(N, [H|T], Acc) -> remove(N-1, T, [H|Acc]). 
 	
-
-
-
 set_norm(NetworkPid, DenormFactor, ExpectedVal, LogEVal) ->
 	NetworkPid ! {set_norm, DenormFactor, ExpectedVal, LogEVal}.
 
 % Passes multiple values to a perceptron in a list fashion
+
 pass_value_multi(_, _, [], _) ->
 	ok;
 pass_value_multi(_, [], _, _) ->
@@ -619,6 +803,7 @@ receive
 		training_list(TrainList)
 end.
 
+%% @hidden
 chorva(File, NetworkPid, Terminator) ->
 	receive
 		{do_training} ->

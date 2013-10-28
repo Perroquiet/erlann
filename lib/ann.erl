@@ -1,9 +1,38 @@
-%
-% ERLANN Library - Production Version (v.0.9.0)
-%
+%%-------------------------------------------------
+%% @author MAGNUM TEAM
+%% @copyright 2013 MAGNUM
+%% @version 0.9.0 (lib)
+%% @doc The ANN module for perceptron manipulation 
+%% @end
+%%-------------------------------------------------
 -module(ann).
--export([perceptron/5, connect/2, get_config/1, connect_config/6, random_weight/0, expected_vals/1]).
+-export([perceptron/5, connect/2, get_config/1]).
 
+
+%% @spec perceptron(Weights::list(), Inputs::list(), Sensitivities::list(), Stale_inputs::list(), Outputs::list()) -> none()
+%% @doc Types:
+%% ```
+%% Weights = List of weights
+%% Inputs = List of Input connections
+%% Sensitivities = List of Output connections
+%% Stale_inputs = List of Input connections indicates if the perceptron is ready for feedforwarding
+%% Outputs = List of Output values
+%% '''
+%% Receive:
+%% ```
+%% {stimulate, Input} = performs the feed  forward operation where Input is a tuple containing {Process_id, Input_value, Expected_output}
+%% {learn, Backprop} = performs  the  backpropagation  operation  where Backprop is a tuple containing {Process_id, Value}
+%% {connect_to_output, Receiver_Pid} = connects  the  perceptron  to  an output perceptron by adding a sensitivity to the list Sensitivities
+%% {connect_to_input, Sender_Pid} = connects the perceptron to an input perceptron by adding an input to the list of Inputs and Stale_Inputs, and assigns a random weight to the list of Weights
+%% {pass, Value, Expected} = passes the value and expected value to the list of connections or Sensitivities
+%% {status, From} = returns  the  current  values  of  the  Weights,  Inputs, Sensitivities, Stale_Inputs, and Output
+%% {reset} = resets the weights of the perceptron to floating-point values between [-1,1]
+%% {return_output, From} = returns the output of the perceptron
+%% {get_config, From} = returns the weight config of the perceptron
+%% {load_config, Weights} = loads the weight config using the Weights message
+%% '''
+%% A perceptron spawned and used for creating and manipulating the network.
+%% @end
 
 perceptron(Weights, Inputs, Sensitivities, Stale_inputs, Outputs) ->
   Sigmoid = fun(X) -> 1/(1+math:exp(-X)) end,
@@ -124,27 +153,29 @@ perceptron(Weights, Inputs, Sensitivities, Stale_inputs, Outputs) ->
 	
 	end.
 
+	
+%% @spec get_config(Pid::pid()) -> message()
+%% @doc Types:
+%% ```
+%% Pid = pid(), Process id of the perceptron
+%% '''
+%% Returns a message to the sender of with the weight configuration.
+%% @end
+
 get_config(Pid) ->
 	Pid ! {get_config, self()},
 	receive
 		{config, Config} ->
 			Config
 	end.
-	
-expected_vals(Eval) ->
-	receive
-		{get, From} ->
-			From ! {ok, hd(Eval)},
-			expected_vals(remove_head(Eval))
-	end.
-	
-remove_head([_|T]) ->
-	T.
 
-connect_config(Sender,Receiver, Weights, Inputs, Sensitivities, StaleInputs) ->
-	Sender ! {connect_config_output, Receiver, Sensitivities},
-	Receiver ! {connect_config_input, Sender, Weights, Inputs, StaleInputs}.  
-  
+random_weight() ->
+	  random:seed(now()),
+		case random:uniform(2) of
+			1 -> random:uniform()-1;
+			2 -> random:uniform()
+		end.
+
 feed_forward(Func, Weights, Inputs) -> 
   Func(dot_prod(Weights, Inputs)).
 
@@ -162,6 +193,16 @@ calculate_sensitivities(_Backprop, _Inputs,
   Sensitivities, _Output, Deriv) ->
   Deriv * lists:sum(convert_to_values(Sensitivities)).
 
+  
+%% @spec connect(Sender::pid(), Receiver::pid()) -> none()
+%% @doc Types:
+%% ```
+%% Sender = pid(), Process id of the Sender perceptron
+%% Receiver = pid(), Process id of the Receiver perceptron
+%% '''
+%% Connects the Sender perceptron to the Receiver perceptron
+%% @end
+  
 connect(Sender, Receiver) ->
   Sender ! {connect_to_output, Receiver},
   Receiver ! {connect_to_input, Sender}.
@@ -177,13 +218,6 @@ replace_input(Inputs, Input) ->
 delete_input(Inputs, Input) ->
   {Input_PID, _, _} = Input,
   lists:keydelete(Input_PID, 1, Inputs).
-
-random_weight() ->
-	  random:seed(now()),
-		case random:uniform(2) of
-			1 -> random:uniform()-1;
-			2 -> random:uniform()
-		end.
 
 convert_to_input_values(Input_list) ->
   lists:map(fun({_, Val, _}) -> Val end, Input_list).

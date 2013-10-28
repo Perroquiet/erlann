@@ -1,0 +1,16 @@
+@author MAGNUM TEAM
+@copyright 2013 MAGNUM
+@version 0.9.0 (lib)
+@title ERLANN Library Documentation
+@doc <em>ERLANN</em> is an Artificial Neural Network (ANN) Library using the Erlang programming language.<br/><hr/><br/>
+Specifications:<br/><br/>
+The library currently uses a single Erlang process for a single perceptron (neuron).<br/>
+<ul/>
+<li>Data Preprocessing: Log Normalization Function</li>
+<li>Activation Function: Sigmoid Function</li>
+<li>Learning Algorithm: Backpropagation</li>
+<li>Training Sequence: Training -> Testing -> Error evaluation</li>
+<li>Evaluation Criteria: Mean Squared Prediction Error (MSPE)</li>
+@end
+@reference <a href="https://erlangcentral.org/wiki/index.php/Erlang_and_Neural_Networks">Erlang and Neural Networks by Wil Chung</a>
+@reference <a href="http://leenissen.dk/">Fast Artificial Neural Network (FANN) Library</a>

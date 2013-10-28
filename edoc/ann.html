@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Module ann</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module ann</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>The ANN module for perceptron manipulation.
+<p>Copyright © 2013 MAGNUM</p>
+
+<p><b>Version:</b> 0.9.0 (lib)</p>
+<p><b>Authors:</b> MAGNUM TEAM.</p>
+
+<h2><a name="description">Description</a></h2>The ANN module for perceptron manipulation
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#connect-2">connect/2</a></td><td>Types:
+  <pre>  Sender = pid(), Process id of the Sender perceptron
+  Receiver = pid(), Process id of the Receiver perceptron</pre>
+  Connects the Sender perceptron to the Receiver perceptron.</td></tr>
+<tr><td valign="top"><a href="#get_config-1">get_config/1</a></td><td>Types:
+  <pre>  Pid = pid(), Process id of the perceptron</pre>
+  Returns a message to the sender of with the weight configuration.</td></tr>
+<tr><td valign="top"><a href="#perceptron-5">perceptron/5</a></td><td>Types:
+  <pre>  Weights = List of weights
+  Inputs = List of Input connections
+  Sensitivities = List of Output connections
+  Stale_inputs = List of Input connections indicates if the perceptron is ready for feedforwarding
+  Outputs = List of Output values</pre>
+  Receive:
+  <pre>  {stimulate, Input} = performs the feed  forward operation where Input is a tuple containing {Process_id, Input_value, Expected_output}
+  {learn, Backprop} = performs  the  backpropagation  operation  where Backprop is a tuple containing {Process_id, Value}
+  {connect_to_output, Receiver_Pid} = connects  the  perceptron  to  an output perceptron by adding a sensitivity to the list Sensitivities
+  {connect_to_input, Sender_Pid} = connects the perceptron to an input perceptron by adding an input to the list of Inputs and Stale_Inputs, and assigns a random weight to the list of Weights
+  {pass, Value, Expected} = passes the value and expected value to the list of connections or Sensitivities
+  {status, From} = returns  the  current  values  of  the  Weights,  Inputs, Sensitivities, Stale_Inputs, and Output
+  {reset} = resets the weights of the perceptron to floating-point values between [-1,1]
+  {return_output, From} = returns the output of the perceptron
+  {get_config, From} = returns the weight config of the perceptron
+  {load_config, Weights} = loads the weight config using the Weights message</pre>
+  A perceptron spawned and used for creating and manipulating the network.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="connect-2">connect/2</a></h3>
+<div class="spec">
+<p><tt>connect(Sender::pid(), Receiver::pid()) -&gt; none()</tt><br></p>
+</div><p>Types:
+  <pre>  Sender = pid(), Process id of the Sender perceptron
+  Receiver = pid(), Process id of the Receiver perceptron</pre>
+  Connects the Sender perceptron to the Receiver perceptron</p>
+
+<h3 class="function"><a name="get_config-1">get_config/1</a></h3>
+<div class="spec">
+<p><tt>get_config(Pid::pid()) -&gt; <a href="#type-message">message()</a></tt><br></p>
+</div><p>Types:
+  <pre>  Pid = pid(), Process id of the perceptron</pre>
+  Returns a message to the sender of with the weight configuration.</p>
+
+<h3 class="function"><a name="perceptron-5">perceptron/5</a></h3>
+<div class="spec">
+<p><tt>perceptron(Weights::list(), Inputs::list(), Sensitivities::list(), Stale_inputs::list(), Outputs::list()) -&gt; none()</tt><br></p>
+</div><p>Types:
+  <pre>  Weights = List of weights
+  Inputs = List of Input connections
+  Sensitivities = List of Output connections
+  Stale_inputs = List of Input connections indicates if the perceptron is ready for feedforwarding
+  Outputs = List of Output values</pre>
+  Receive:
+  <pre>  {stimulate, Input} = performs the feed  forward operation where Input is a tuple containing {Process_id, Input_value, Expected_output}
+  {learn, Backprop} = performs  the  backpropagation  operation  where Backprop is a tuple containing {Process_id, Value}
+  {connect_to_output, Receiver_Pid} = connects  the  perceptron  to  an output perceptron by adding a sensitivity to the list Sensitivities
+  {connect_to_input, Sender_Pid} = connects the perceptron to an input perceptron by adding an input to the list of Inputs and Stale_Inputs, and assigns a random weight to the list of Weights
+  {pass, Value, Expected} = passes the value and expected value to the list of connections or Sensitivities
+  {status, From} = returns  the  current  values  of  the  Weights,  Inputs, Sensitivities, Stale_Inputs, and Output
+  {reset} = resets the weights of the perceptron to floating-point values between [-1,1]
+  {return_output, From} = returns the output of the perceptron
+  {get_config, From} = returns the weight config of the perceptron
+  {load_config, Weights} = loads the weight config using the Weights message</pre>
+  A perceptron spawned and used for creating and manipulating the network.</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Oct 29 2013, 00:47:51.</i></p>
+</body>
+</html>

@@ -1,0 +1,3 @@
+{application,'ERLANN'}.
+{packages,[]}.
+{modules,[ann,csv_parser,erlann,parent_ann]}.

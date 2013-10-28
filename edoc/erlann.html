@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Module erlann</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module erlann</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>The main library for the ANN creation and execution.
+<p>Copyright © 2013 MAGNUM</p>
+
+<p><b>Version:</b> 0.9.0 (lib)</p>
+<p><b>Authors:</b> MAGNUM TEAM.</p>
+
+<h2><a name="description">Description</a></h2>The main library for the ANN creation and execution
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#create_network-3">create_network/3</a></td><td>Types:
+  <pre>  NumInputNodes = integer(), Number of Input nodes
+  HiddenLayersList = List, Number of Hidden layers and nodes per layer
+  NumOutputNodes = integer(), Number of Output nodes</pre>
+  Create network w/ number of inputs, hidden and output nodes.</td></tr>
+<tr><td valign="top"><a href="#get_config-2">get_config/2</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  FileName = filename_all(), Name of file to save the configuration</pre>
+  Gets the Weight configuration of the Network and saved to a textfile.</td></tr>
+<tr><td valign="top"><a href="#get_hidden_layer-1">get_hidden_layer/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  List = List of process ids</pre>
+  Returns ta list of PIDs in the Hidden Layer(s).</td></tr>
+<tr><td valign="top"><a href="#get_input_layer-1">get_input_layer/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  List = List of process ids</pre>
+  Returns ta list of PIDs in the Input Layer.</td></tr>
+<tr><td valign="top"><a href="#get_log_rev-1">get_log_rev/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the output of the network.</td></tr>
+<tr><td valign="top"><a href="#get_output-1">get_output/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the raw output of the network.</td></tr>
+<tr><td valign="top"><a href="#get_output_layer-1">get_output_layer/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  List = List of process ids</pre>
+  Returns ta list of PIDs in the Output Layer.</td></tr>
+<tr><td valign="top"><a href="#get_pid-3">get_pid/3</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  Layer = input | hidden | output
+  Position = integer() | List</pre>
+  Returns the Pid of the desired Node.</td></tr>
+<tr><td valign="top"><a href="#get_status-3">get_status/3</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  Layer = input | hidden | output
+  Index = integer() | List</pre>
+  Returns the status of a perceptron.</td></tr>
+<tr><td valign="top"><a href="#load_config-1">load_config/1</a></td><td>Types:
+  <pre>  FileName = filename_all(), Name of file to load the configuration</pre>
+  Loads the Weight configuration of the Network from a config file, and spawns a parent process.</td></tr>
+<tr><td valign="top"><a href="#load_weights-2">load_weights/2</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  FileName = filename_all(), Name of file to load the configuration</pre>
+  Loads the Weight configuration to the network.</td></tr>
+<tr><td valign="top"><a href="#mspe-1">mspe/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the MSPE of the network.</td></tr>
+<tr><td valign="top"><a href="#network_error-1">network_error/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the Error of the network using the Error Fucntion.</td></tr>
+<tr><td valign="top"><a href="#pass_forecasting-2">pass_forecasting/2</a></td><td>Types:
+  <pre>  File = filename_all(), Name of the CSV File ".csv" extension included
+  NetworkPid = Parent process of the network</pre>
+  Passes input data to the network from a Comma Separated Values (CSV) file for forecasting.</td></tr>
+<tr><td valign="top"><a href="#pass_training-3">pass_training/3</a></td><td>Types:
+  <pre>  File = filename_all(), Name of the CSV File ".csv" extension included
+  NetworkPid = Parent process of the network
+  ErrorDiff = float(), User defined Error Threshold for stopping the training</pre>
+  Passes input data to the network from a Comma Separated Values (CSV) file for training.</td></tr>
+<tr><td valign="top"><a href="#pass_values-3">pass_values/3</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network
+  Inputs = list(), List of input data
+  Expected = list(), List of Expected Values, can be list of null values (no backpropagation)</pre>
+  Passes Values to  the network with a List of Inputs, and List of Expected Values.</td></tr>
+<tr><td valign="top"><a href="#reset_weights-1">reset_weights/1</a></td><td>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Resets the weights of the Network to values between [-1,1].</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="create_network-3">create_network/3</a></h3>
+<div class="spec">
+<p><tt>create_network(NumInputNodes::integer(), HiddenLayersList::List, NumOutputNodes::integer) -&gt; pid()</tt><br></p>
+</div><p>Types:
+  <pre>  NumInputNodes = integer(), Number of Input nodes
+  HiddenLayersList = List, Number of Hidden layers and nodes per layer
+  NumOutputNodes = integer(), Number of Output nodes</pre>
+  Create network w/ number of inputs, hidden and output nodes.
+  Returns a Network Pid - Parent Process Pid.
+  <br><br>Example:
+  <pre>     &gt;N = erlann:create_network(4,[4],1).</pre>
+  Creates a network with 4 input nodes, 1 hidden layer with 4 hidden nodes, and 1 output node.</p>
+
+<h3 class="function"><a name="get_config-2">get_config/2</a></h3>
+<div class="spec">
+<p><tt>get_config(NetworkPid::pid(), FileName::string()) -&gt; ok</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  FileName = filename_all(), Name of file to save the configuration</pre>
+  Gets the Weight configuration of the Network and saved to a textfile
+  <br><br>Example:
+  <pre>     &gt;erlann:get_config(N,"TrainingConf").</pre></p>
+
+<h3 class="function"><a name="get_hidden_layer-1">get_hidden_layer/1</a></h3>
+<div class="spec">
+<p><tt>get_hidden_layer(NetworkPid::pid()) -&gt; List::list()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  List = List of process ids</pre>
+  Returns ta list of PIDs in the Hidden Layer(s)
+  <br><br>Example:
+  <pre>     &gt;erlann:get_hidden_layer(N).</pre></p>
+
+<h3 class="function"><a name="get_input_layer-1">get_input_layer/1</a></h3>
+<div class="spec">
+<p><tt>get_input_layer(NetworkPid::pid()) -&gt; List::list()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  List = List of process ids</pre>
+  Returns ta list of PIDs in the Input Layer
+  <br><br>Example:
+  <pre>     &gt;erlann:get_input_layer(N).</pre></p>
+
+<h3 class="function"><a name="get_log_rev-1">get_log_rev/1</a></h3>
+<div class="spec">
+<p><tt>get_log_rev(NetworkPid::pid()) -&gt; tuple()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the output of the network.
+  Tuple consists of:
+  <pre>  {Output_node_Process_ID, Log_reversed_Output, Accuracy}</pre>
+  <br><br>Example:
+  <pre>     &gt;erlann:get_log_rev(N).</pre></p>
+
+<h3 class="function"><a name="get_output-1">get_output/1</a></h3>
+<div class="spec">
+<p><tt>get_output(NetworkPid::pid()) -&gt; tuple()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the raw output of the network.
+  Tuple consists of:
+  <pre>  {Output_Process_ID, Output_from_the_network, Error, ExpectedValue}</pre>
+  <br><br>Example:
+  <pre>     &gt;erlann:get_output(N).</pre></p>
+
+<h3 class="function"><a name="get_output_layer-1">get_output_layer/1</a></h3>
+<div class="spec">
+<p><tt>get_output_layer(NetworkPid::pid()) -&gt; List::list()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  List = List of process ids</pre>
+  Returns ta list of PIDs in the Output Layer
+  <br><br>Example:
+  <pre>     &gt;erlann:get_output_layer(N).</pre></p>
+
+<h3 class="function"><a name="get_pid-3">get_pid/3</a></h3>
+<div class="spec">
+<p><tt>get_pid(NetworkPid::pid(), Layer::atom(), Position::integer()) -&gt; pid()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  Layer = input | hidden | output
+  Position = integer() | List</pre>
+  Returns the Pid of the desired Node.
+  <br><br>Example:
+  <pre>     &gt;erlann:get_pid(N, hidden, [1,2]).</pre>
+  Returns process id of the 1st hidden layer and 2nd index.</p>
+
+<h3 class="function"><a name="get_status-3">get_status/3</a></h3>
+<div class="spec">
+<p><tt>get_status(NetworkPid::pid(), Layer::atom(), Index::integer()) -&gt; tuple()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  Layer = input | hidden | output
+  Index = integer() | List</pre>
+  Returns the status of a perceptron.
+  Tuple consists of:<br>
+  <pre>  {NodePid, Weights, Inputs, Sensitivities, Stale_inputs, Outputs}</pre>
+  Example:
+  <pre>     &gt;erlann:get_status(N, hidden, [1,2]).</pre>
+  Returns process id of the 1st hidden layer and 2nd index.</p>
+
+<h3 class="function"><a name="load_config-1">load_config/1</a></h3>
+<div class="spec">
+<p><tt>load_config(FileName::string()) -&gt; pid()</tt><br></p>
+</div><p>Types:
+  <pre>  FileName = filename_all(), Name of file to load the configuration</pre>
+  Loads the Weight configuration of the Network from a config file, and spawns a parent process.
+  <br><br>Example:
+  <pre>     &gt;N = erlann:load_config("TrainingConf").</pre></p>
+
+<h3 class="function"><a name="load_weights-2">load_weights/2</a></h3>
+<div class="spec">
+<p><tt>load_weights(NetworkPid::pid(), FileName::string()) -&gt; ok</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  FileName = filename_all(), Name of file to load the configuration</pre>
+  Loads the Weight configuration to the network.
+  <br><br>Example:
+  <pre>     &gt;erlann:load_weights(N, "TrainingConf").</pre></p>
+
+<h3 class="function"><a name="mspe-1">mspe/1</a></h3>
+<div class="spec">
+<p><tt>mspe(NetworkPid::pid()) -&gt; float()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the MSPE of the network
+  <br><br>Example:
+  <pre>     &gt;erlann:mspe(N).</pre></p>
+
+<h3 class="function"><a name="network_error-1">network_error/1</a></h3>
+<div class="spec">
+<p><tt>network_error(NetworkPid::pid()) -&gt; float()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Returns the Error of the network using the Error Fucntion
+  <br><br>Example:
+  <pre>     &gt;erlann:network_error(N).</pre></p>
+
+<h3 class="function"><a name="pass_forecasting-2">pass_forecasting/2</a></h3>
+<div class="spec">
+<p><tt>pass_forecasting(File::string(), NetworkPid::pid()) -&gt; none()</tt><br></p>
+</div><p>Types:
+  <pre>  File = filename_all(), Name of the CSV File ".csv" extension included
+  NetworkPid = Parent process of the network</pre>
+  Passes input data to the network from a Comma Separated Values (CSV) file for forecasting.
+  The function does the following: data normalization, passing of values to the network, output return.
+  <br><br>Example:
+  <pre>     &gt;erlann:pass_forecasting("Forecast1Day.csv", N).</pre></p>
+
+<h3 class="function"><a name="pass_training-3">pass_training/3</a></h3>
+<div class="spec">
+<p><tt>pass_training(File::string(), NetworkPid::pid(), ErrorDiff::float()) -&gt; none()</tt><br></p>
+</div><p>Types:
+  <pre>  File = filename_all(), Name of the CSV File ".csv" extension included
+  NetworkPid = Parent process of the network
+  ErrorDiff = float(), User defined Error Threshold for stopping the training</pre>
+  Passes input data to the network from a Comma Separated Values (CSV) file for training.
+  The function does the following: data normalization, gathering of training points, passing of values to the network, testing and error evaluation.
+  <br><br>Example:
+  <pre>     &gt;erlann:pass_training("Training1Day.csv", N, 0.001).</pre></p>
+
+<h3 class="function"><a name="pass_values-3">pass_values/3</a></h3>
+<div class="spec">
+<p><tt>pass_values(NetworkPid::pid(), Inputs::list(), Expected::list()) -&gt; none()</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network
+  Inputs = list(), List of input data
+  Expected = list(), List of Expected Values, can be list of null values (no backpropagation)</pre>
+  Passes Values to  the network with a List of Inputs, and List of Expected Values.
+  <br><br>Example:
+  <pre>     &gt;erlann:pass_values(N, [1,0.4,0.5,0.6], [0.5]).</pre></p>
+
+<h3 class="function"><a name="reset_weights-1">reset_weights/1</a></h3>
+<div class="spec">
+<p><tt>reset_weights(NetworkPid::pid()) -&gt; ok</tt><br></p>
+</div><p>Types:
+  <pre>  NetworkPid = Parent process of the network</pre>
+  Resets the weights of the Network to values between [-1,1].
+  <br><br>Example:
+  <pre>     &gt;erlann:reset_weights(N).</pre></p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Oct 29 2013, 00:47:51.</i></p>
+</body>
+</html>

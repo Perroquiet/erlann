@@ -1,8 +1,22 @@
--module(csvANN).
-
+%%--------------------------------------------------------- 
+%% @author MAGNUM TEAM
+%% @copyright 2013 MAGNUM
+%% @version 0.9.0 (lib)
+%% @doc CSV Parser
+%% @end
+%%---------------------------------------------------------
+-module(csv_parser).
 -export([
-    parse/1, load_file_config/1
+    parse/1
 ]).
+
+%% @spec parse(File::file()) -> list()
+%% @doc Types:
+%% ```
+%% File = filename_all(), CSV file to be parsed
+%% '''
+%% Returns a list of data parsed from the CSV.
+%% @end
 
 parse(File) ->
     try
@@ -56,14 +70,3 @@ bin_to_num(Bin) ->
         {F,_Rest} -> F
     end.
 	
-load_file_config(FileName) ->
-    {ok, Device} = file:open(FileName, [read]),
-    try get_all_lines(Device)
-      after file:close(Device)
-    end.
-
-get_all_lines(Device) ->
-    case io:get_line(Device, "") of
-        eof  -> [];
-        Line -> Line ++ get_all_lines(Device)
-    end.
